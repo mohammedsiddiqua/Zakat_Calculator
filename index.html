@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zakat Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #28a745, #218838);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        input[type="number"], select {
+            width: 95%;
+            padding: 0.875rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: #28a745;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .result-section {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            padding: 1.75rem;
+            border-radius: 15px;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .zakat-condition {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .popup h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .popup p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .popup button {
+            width: auto;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Zakat Calculator</h1>
+        <form id="zakatForm">
+            <!-- Gold Rate, Karat, and Currency Selection -->
+            <div class="section">
+                <h2>Gold Rate, Karat, and Currency</h2>
+                <div class="input-group">
+                    <label for="goldKarat">Select Karat:</label>
+                    <select id="goldKarat" name="goldKarat">
+                        <option value="24">24K</option>
+                        <option value="22">22K</option>
+                        <option value="21">21K</option>
+                        <option value="18">18K</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="goldRate">Gold Rate (per gram): <span style="color: red;">*</span></label>
+                    <input type="number" id="goldRate" name="goldRate" step="0.01" required>
+                </div>
+                <div class="input-group">
+                    <label for="currency">Currency:</label>
+                    <select id="currency" name="currency">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="INR">INR (₹)</option>
+                        <option value="PKR">PKR (₨)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Zakat on Gold -->
+            <div class="section">
+                <h2>Zakat on Gold (2.5%)</h2>
+                <div class="input-group">
+                    <label for="gold24">24 Carat Gold/Jewelry (grams):</label>
+                    <input type="number" id="gold24" name="gold24" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="gold22">22 Carat Gold/Jewelry (grams):</label>
+                    <input type="number" id="gold22" name="gold22" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="gold21">21 Carat Gold/Jewelry (grams):</label>
+                    <input type="number" id="gold21" name="gold21" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="gold18">18 Carat Gold/Jewelry (grams):</label>
+                    <input type="number" id="gold18" name="gold18" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="otherGold">Other Gold Valuables:</label>
+                    <input type="number" id="otherGold" name="otherGold" step="0.01">
+                </div>
+            </div>
+
+            <!-- Zakat on Cash -->
+            <div class="section">
+                <h2>Zakat on Cash (2.5%)</h2>
+                <div class="input-group">
+                    <label for="cashInHand">Cash in Hand:</label>
+                    <input type="number" id="cashInHand" name="cashInHand" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="cashInSavings">Cash in Savings Accounts:</label>
+                    <input type="number" id="cashInSavings" name="cashInSavings" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="cashInCurrent">Cash in Current Accounts:</label>
+                    <input type="number" id="cashInCurrent" name="cashInCurrent" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="fixedDeposits">Cash in Fixed Deposits:</label>
+                    <input type="number" id="fixedDeposits" name="fixedDeposits" step="0.01">
+                </div>
+            </div>
+
+            <button type="button" onclick="calculateZakat()">Calculate Zakat</button>
+        </form>
+
+        <div class="result-section">
+            <h2>Zakat Payable</h2>
+            <div id="zakatResult" class="result-box">0.00</div>
+            <div id="zakatCondition" class="zakat-condition"></div>
+        </div>
+
+        <!-- Zakat Rules Popup -->
+        <button type="button" onclick="showPopup()" style="margin-top: 1rem; width: auto; padding: 0.75rem 1.5rem;">
+            View Zakat Rules
+        </button>
+    </div>
+
+    <!-- Popup for Zakat Rules -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <h3>Zakat Rules and Conditions</h3>
+        <p>
+            <strong>1. Nisab Threshold:</strong> Zakat is obligatory if your net worth exceeds the Nisab threshold, which is equivalent to 87.48 grams of gold or 612.36 grams of silver.
+        </p>
+        <p>
+            <strong>2. Zakat Rate:</strong> The Zakat rate is 2.5% of your total eligible wealth.
+        </p>
+        <p>
+            <strong>3. Eligible Wealth:</strong> Zakat is payable on gold, silver, cash, savings, investments, and business assets held for one lunar year.
+        </p>
+        <p>
+            <strong>4. Exemptions:</strong> Personal belongings, primary residence, and debts owed to you are exempt from Zakat.
+        </p>
+        <button type="button" onclick="hidePopup()">Close</button>
+    </div>
+
+    <script type="text/javascript">
+        // Function to calculate Zakat
+        function calculateZakat() {
+            const goldRate = document.getElementById('goldRate').value;
+            if (!goldRate) {
+                alert("Gold Rate is a mandatory field. Please enter the gold rate.");
+                return;
+            }
+
+            const goldKarat = parseFloat(document.getElementById('goldKarat').value);
+            const goldRateValue = parseFloat(goldRate) || 0;
+            const currency = document.getElementById('currency').value;
+
+            // Get currency symbol
+            const currencySymbols = {
+                USD: "$",
+                EUR: "€",
+                GBP: "£",
+                INR: "₹",
+                PKR: "₨"
+            };
+            const currencySymbol = currencySymbols[currency] || "";
+
+            // Calculate equivalent rates for other karats
+            const rate24K = goldKarat === 24 ? goldRateValue : (goldRateValue / goldKarat) * 24;
+            const rate22K = goldKarat === 22 ? goldRateValue : (goldRateValue / goldKarat) * 22;
+            const rate21K = goldKarat === 21 ? goldRateValue : (goldRateValue / goldKarat) * 21;
+            const rate18K = goldKarat === 18 ? goldRateValue : (goldRateValue / goldKarat) * 18;
+
+            const gold24 = parseFloat(document.getElementById('gold24').value) || 0;
+            const gold22 = parseFloat(document.getElementById('gold22').value) || 0;
+            const gold21 = parseFloat(document.getElementById('gold21').value) || 0;
+            const gold18 = parseFloat(document.getElementById('gold18').value) || 0;
+            const otherGold = parseFloat(document.getElementById('otherGold').value) || 0;
+            const cashInHand = parseFloat(document.getElementById('cashInHand').value) || 0;
+            const cashInSavings = parseFloat(document.getElementById('cashInSavings').value) || 0;
+            const cashInCurrent = parseFloat(document.getElementById('cashInCurrent').value) || 0;
+            const fixedDeposits = parseFloat(document.getElementById('fixedDeposits').value) || 0;
+
+            // Calculate total gold value based on equivalent rates
+            const totalGoldValue = (gold24 * rate24K) + (gold22 * rate22K) + (gold21 * rate21K) + (gold18 * rate18K);
+            const totalCash = cashInHand + cashInSavings + cashInCurrent + fixedDeposits;
+
+            const totalValue = totalGoldValue + otherGold + totalCash;
+
+            // Nisab threshold (87.48 grams of gold)
+            const nisabThreshold = 87.48 * rate24K;
+
+            // Calculate Zakat payable
+            const zakatPayable = totalValue >= nisabThreshold ? totalValue * 0.025 : 0;
+
+            // Display result with selected currency symbol
+            const zakatResult = document.getElementById('zakatResult');
+            const zakatCondition = document.getElementById('zakatCondition');
+
+            if (totalValue >= nisabThreshold) {
+                zakatResult.innerText = `${currencySymbol} ${zakatPayable.toFixed(2)}`;
+                zakatCondition.innerText = `Your net worth exceeds the Nisab threshold. Zakat is payable.`;
+                zakatCondition.style.color = "#dc3545";
+            } else {
+                zakatResult.innerText = `${currencySymbol} 0.00`;
+                const netWorthInGold = (totalValue / rate24K).toFixed(2);
+                zakatCondition.innerText = `Your net worth is below the Nisab threshold. Zakat is not payable. Your net worth is equivalent to ${netWorthInGold} grams of 24K gold.`;
+                zakatCondition.style.color = "#28a745";
+            }
+        }
+
+        // Function to show Zakat rules popup
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Function to hide Zakat rules popup
+        function hidePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
